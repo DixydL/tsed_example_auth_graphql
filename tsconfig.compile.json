@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@root/*": ["src/*"],
+    },
+    "plugins": [
+      { "transform": "typescript-transform-paths" },
+    ],
+    "outDir": "./dist",
+    "moduleResolution": "node",
+    "declaration": false,
+    "noResolve": false,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "noEmit": false,
+    "emitDeclarationOnly": false,
+    "inlineSources": true,
+    "skipLibCheck": true
+  }
+}
