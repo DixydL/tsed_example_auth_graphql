@@ -9,6 +9,8 @@ import cors from "cors";
 import "@tsed/ajv";
 import "@tsed/typeorm";
 import {config, rootDir} from "./config";
+import {JWTMidlleware} from "./midlleware/JWTMidlleware";
+import {useContainer} from "class-validator";
 
 @Configuration({
   ...config,
@@ -16,13 +18,9 @@ import {config, rootDir} from "./config";
   httpPort: process.env.PORT || 8083,
   httpsPort: false, // CHANGE
   mount: {
-    "/rest": [
-      `${rootDir}/controllers/**/*.ts`
-    ]
+    "/rest": [`${rootDir}/controllers/**/*.ts`]
   },
-  exclude: [
-    "**/*.spec.ts"
-  ]
+  exclude: ["**/*.spec.ts"]
 })
 export class Server {
   @Inject()
@@ -32,14 +30,18 @@ export class Server {
   settings: Configuration;
 
   $beforeRoutesInit(): void {
+    useContainer(this.app.injector, {fallback: true});
     this.app
       .use(cors())
       .use(cookieParser())
       .use(compress({}))
       .use(methodOverride())
       .use(bodyParser.json())
-      .use(bodyParser.urlencoded({
-        extended: true
-      }));
+      .use(JWTMidlleware)
+      .use(
+        bodyParser.urlencoded({
+          extended: true
+        })
+      );
   }
 }

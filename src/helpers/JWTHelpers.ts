@@ -1,6 +1,5 @@
-import {User} from "@root/entity/User/User";
 import * as jwt from "jsonwebtoken";
-import { UserData } from "../data/user/UserData";
+import {UserData} from "../data/user/UserData";
 
 export class JWThelper {
   static async verifyToken(token: string): Promise<number> {
@@ -23,7 +22,7 @@ export class JWThelper {
 
   static createToken(user: UserData): [string, number] {
     const now = Date.now();
-    let tokenExp = now + 60 * 60 * 30;
+    const tokenExp = now + 60 * 60 * 30;
 
     return [
       jwt.sign(
@@ -40,7 +39,7 @@ export class JWThelper {
 
   static createTokenRefresh(user: UserData): [string, number] {
     const now = Date.now();
-    let tokenRefreshExp = now + 60 * 60 * 60 * 10000;
+    const tokenRefreshExp = now + 60 * 60 * 60 * 10000;
     return [
       jwt.sign(
         {

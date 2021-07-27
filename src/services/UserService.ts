@@ -1,4 +1,4 @@
-import {Inject, Injectable, Service} from "@tsed/common";
+import {Inject, Service} from "@tsed/common";
 import {UseConnection} from "@tsed/typeorm";
 import {User} from "@root/entity/User/User";
 import {UserInput} from "../inputs/User/UserInput";
@@ -8,9 +8,10 @@ import {Passwordhelper} from "@root/helpers/PasswordHelper";
 import {FindConditions, FindOneOptions} from "typeorm";
 import {QueryDeepPartialEntity} from "typeorm/query-builder/QueryPartialEntity";
 import {JWThelper} from "@root/helpers/JWTHelpers";
-import {Token} from "@root/entity/Token";
 import {UserData} from "../data/user/UserData";
 import {NotFound} from "@tsed/exceptions";
+import {Token} from "@root/data/user/Token";
+
 @Service()
 export class UserService {
   @Inject()
@@ -18,7 +19,7 @@ export class UserService {
   userRepository: UserRepository;
 
   async validateUser(userLoginInput: UserLoginInput): Promise<User | null> {
-    let user = await this.userRepository.findOne({email: userLoginInput.email});
+    const user = await this.userRepository.findOne({email: userLoginInput.email});
     if (user && (await Passwordhelper.checkPassword(userLoginInput.password, user.passwordHash))) {
       return user;
     }
@@ -26,8 +27,8 @@ export class UserService {
   }
 
   async validateRefreshToken(tokenRefresh: string): Promise<UserData | null> {
-    let userId = await JWThelper.verifyRefreshToken(tokenRefresh);
-    let user = await this.findById(userId);
+    const userId = await JWThelper.verifyRefreshToken(tokenRefresh);
+    const user = await this.findById(userId);
 
     if (user && user.tokenRefresh === tokenRefresh) {
       return user;
@@ -37,8 +38,8 @@ export class UserService {
   }
 
   async createNewToken(user: UserData): Promise<Token> {
-    let [tokenRefresh, tokenRefreshExp] = JWThelper.createTokenRefresh(user);
-    let [token, tokenExp] = JWThelper.createToken(user);
+    const [tokenRefresh, tokenRefreshExp] = JWThelper.createTokenRefresh(user);
+    const [token, tokenExp] = JWThelper.createToken(user);
     await this.updateById({id: user.id}, {tokenRefresh});
 
     return new Token(token, tokenRefresh, tokenExp, tokenRefreshExp);
@@ -49,7 +50,7 @@ export class UserService {
   }
 
   async create(userInput: UserInput) {
-    let user = new User();
+    const user = new User();
     user.email = userInput.email;
     user.name = userInput.name;
     user.name = userInput.name;
@@ -58,7 +59,7 @@ export class UserService {
   }
 
   async findById(userId: number) {
-    let user = await this.userRepository.findOne({id: userId}, {relations: ["role"]});
+    const user = await this.userRepository.findOne({id: userId});
 
     if (user === undefined) {
       throw new NotFound("user not found");

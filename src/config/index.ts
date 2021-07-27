@@ -1,7 +1,8 @@
 import {join} from "path";
-import { UserResolve } from "@root/resolves/UserResolve";
+import {UserResolve} from "@root/resolves/UserResolve";
 import {loggerConfig} from "./logger";
 import typeormConfig from "./typeorm";
+import { customAuthChecker } from "./AuthChecker";
 
 const {version} = require("../../package.json");
 export const rootDir = join(__dirname, "..");
@@ -24,7 +25,7 @@ export const config: Partial<TsED.Configuration> = {
       },
       buildSchemaOptions: {
         resolvers: [UserResolve],
-        //authChecker: customAuthChecker
+        authChecker: customAuthChecker
       }
     }
   }
